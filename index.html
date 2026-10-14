@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EXE REACTOR · form&amp;soul.exe</title>
+<link rel="stylesheet" href="engine/exe-reactor.css?v=1.0.0">
+<style>
+  html, body { margin: 0; height: 100%; background: #0d0b09; overflow: hidden; }
+  .rv-main, .rv-frame, .rv-scene { position: absolute; inset: 0; }
+  .note { position: fixed; left: 10px; bottom: 8px; font: 12px/1.4 monospace; color: #c9a46a; opacity: .75; z-index: 9; }
+  .note a { color: #ffd08a; }
+</style>
+</head>
+<body>
+<div class="rv-main"><div class="rv-frame"><div id="scene" class="rv-scene"></div></div></div>
+<div class="note">EXE REACTOR · form&amp;soul.exe · asset host for the StreamElements widget · <a href="CREDITS.md">audio credits</a></div>
+<script>
+  // Preview page: the hosted engine running on its own (no StreamElements). ?lang=es|pt-PT|de|fr
+  var q = new URLSearchParams(location.search);
+  window.DUCK_REACTOR_OPTIONS = { useSaved: false };
+  window.addEventListener("duckreactor:ready", function () {
+    var s = window.duckReactor.store, l = q.get("lang");
+    var sets = [["chat.auto.enabled", true], ["chat.auto.calm", 45], ["chat.recovery.selfResolve", true]];
+    if (l) sets.push(["memes.lang", l]);
+    s.setMany(sets, { source: "preview" });
+  });
+</script>
+<script src="engine/exe-reactor.js?v=1.0.0"></script>
+</body>
+</html>

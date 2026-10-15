@@ -1,4 +1,4 @@
-/* EXE REACTOR engine v1.0.0 · form&soul.exe · © form&soul.exe — licensed for use with a purchased EXE REACTOR widget */
+/* EXE REACTOR engine v1.1.0 · form&soul.exe · © form&soul.exe — licensed for use with a purchased EXE REACTOR widget */
 (function () {
   "use strict";
   var me = document.currentScript && document.currentScript.src;
@@ -631,6 +631,10 @@ window.DUCK_REACTOR_CONFIG = {
     recovery: { selfResolve: false, halfLife: 90, emergency: true, after: 45, rate: 6, phrase: 4.5 },
     // ciclo automático: tras `calm` s de calma el reactor se calienta solo y llega a CRITICAL en `rise` s (se repite)
     auto: { enabled: false, calm: 120, rise: 30 },
+    // etapa 22 · «enfriar sale caro»: durante CRITICAL un solo !cool no basta. Hacen falta `cools` !cool
+    // de personas distintas (una vez cada una) o `follows` follows nuevos (0 = los follows no cuentan).
+    // Una sub o un evento de pago (bits, propinas) enfría de golpe, como siempre.
+    lock: { enabled: true, cools: 5, follows: 3 },
     coffeeAfterCrisis: true,
   },
 
@@ -726,6 +730,7 @@ window.DUCK_REACTOR_CONFIG = {
         leakTag: "STEAM LEAK", leakWhere: "JOINT L-2", leakCold: "COOLANT AT L-2",
         chatAnon: "SOMEONE IN CHAT",
         heatTag: "DO NOT TOUCH", heatOne: "{name} SAYS THEY KNOW WHAT THEY ARE DOING", heatMany: "{name} AND {n} MORE SAY THEY KNOW WHAT THEY ARE DOING",
+        lockCool: "COOLANT {n}/{t}", lockFollow: "FOLLOWS {n}/{t}", lockPaid: "1 SUB = INSTANT FIX", followOne: "{name} FOLLOWED · VALVE +1",
         coolTag: "COOLANT", coolOne: "{name} SENT COOLANT", coolMany: "{name} AND {n} MORE SENT COOLANT", coolHelp: "+{n} COOLANT FROM CHAT",
         becTag: "EMERGENCY", becMain: "INTERN INTERVENTION", becSub: "MANUAL COOLING IN PROGRESS",
         /* Pantallas (etapa 15). {n} = número · {t} = temperatura · {level} = nivel */
@@ -777,6 +782,7 @@ window.DUCK_REACTOR_CONFIG = {
         leakTag: "FUGA DE VAPOR", leakWhere: "JUNTA L-2", leakCold: "REFRIGERANTE EN L-2",
         chatAnon: "ALGUIEN DEL CHAT",
         heatTag: "NO TOCAR", heatOne: "{name} ASEGURA QUE SABE LO QUE HACE", heatMany: "{name} Y {n} MÁS ASEGURAN QUE SABEN LO QUE HACEN",
+        lockCool: "REFRIGERANTE {n}/{t}", lockFollow: "FOLLOWS {n}/{t}", lockPaid: "1 SUB = ARREGLO AL INSTANTE", followOne: "{name} SIGUE EL CANAL · VÁLVULA +1",
         coolTag: "REFRIGERANTE", coolOne: "{name} MANDA REFRIGERANTE", coolMany: "{name} Y {n} MÁS MANDAN REFRIGERANTE", coolHelp: "+{n} DE REFRIGERANTE DEL CHAT",
         becTag: "EMERGENCIA", becMain: "INTERVENCIÓN DEL BECARIO", becSub: "REFRIGERACIÓN MANUAL EN CURSO",
         scrSoonHeader: "EMISIÓN.EXE", scrSoonBadge: "EN ESPERA", scrSoonLines: ["EMPEZAMOS", "EN BREVE"], scrSoonFooter: "NO SE RETIREN",
@@ -912,6 +918,7 @@ window.DUCK_REACTOR_CONFIG = {
       heatOne: "{name} JURA QUE SABE O QUE ESTÁ A FAZER",
       heatMany: "{name} E MAIS {n} JURAM QUE SABEM O QUE ESTÃO A FAZER",
       coolTag: "REFRIGERANTE",
+      lockCool: "REFRIGERANTE {n}/{t}", lockFollow: "FOLLOWS {n}/{t}", lockPaid: "1 SUB = SOLUÇÃO IMEDIATA", followOne: "{name} SEGUIU O CANAL · VÁLVULA +1",
       coolOne: "{name} ENVIOU REFRIGERANTE",
       coolMany: "{name} E MAIS {n} ENVIARAM REFRIGERANTE",
       coolHelp: "+{n} DE REFRIGERANTE DO CHAT",
@@ -1055,6 +1062,7 @@ window.DUCK_REACTOR_CONFIG = {
       heatOne: "{name} SAGT: „ICH WEISS, WAS ICH TUE.“",
       heatMany: "{name} UND {n} WEITERE SAGEN: „WIR WISSEN, WAS WIR TUN.“",
       coolTag: "KÜHLMITTEL",
+      lockCool: "KÜHLMITTEL {n}/{t}", lockFollow: "FOLLOWS {n}/{t}", lockPaid: "1 SUB = SOFORT GELÖST", followOne: "{name} FOLGT · VENTIL +1",
       coolOne: "{name} SCHICKT KÜHLMITTEL",
       coolMany: "{name} UND {n} WEITERE SCHICKEN KÜHLMITTEL",
       coolHelp: "+{n} KÜHLMITTEL AUS DEM CHAT",
@@ -1198,6 +1206,7 @@ window.DUCK_REACTOR_CONFIG = {
       heatOne: "{name} ASSURE QUE TOUT EST SOUS CONTRÔLE",
       heatMany: "{name} ET {n} DE PLUS ASSURENT QUE TOUT EST SOUS CONTRÔLE",
       coolTag: "RÉFRIGÉRANT",
+      lockCool: "RÉFRIGÉRANT {n}/{t}", lockFollow: "FOLLOWS {n}/{t}", lockPaid: "1 SUB = RÉPARATION IMMÉDIATE", followOne: "{name} SUIT LA CHAÎNE · VANNE +1",
       coolOne: "{name} A ENVOYÉ DU RÉFRIGÉRANT",
       coolMany: "{name} ET {n} DE PLUS ONT ENVOYÉ DU RÉFRIGÉRANT",
       coolHelp: "+{n} DE RÉFRIGÉRANT VIA LE CHAT",
@@ -1872,6 +1881,7 @@ window.DUCK_REACTOR_PRESETS = {
     ["memes.texts.*.popClosing", t(48)], ["memes.texts.*.recAdvisory", t(56)], ["memes.texts.*.subRecovering", t(56)], ["memes.texts.*.subRecoveringWait", t(56)],
     ["memes.texts.*.gsReply", t(56)], ["memes.texts.*.gsSent", t(56)], ["memes.texts.*.gsTitle", t(48)], ["memes.texts.*.gaStart", t(56)], ["memes.texts.*.gaQuestion", t(56)],
     ["memes.texts.*.gaWait", t(56)], ["memes.texts.*.gaRestart", t(48)], ["memes.texts.*.gcProto", t(56)], ["memes.texts.*.gcAsk", t(56)], ["memes.texts.*.gcThanks", t(64)], ["memes.texts.*.popNoClose", t(48)], ["memes.texts.*.subAnonMany", t(40)],
+    ["memes.texts.*.lockCool", t(32)], ["memes.texts.*.lockFollow", t(32)], ["memes.texts.*.lockPaid", t(40)], ["memes.texts.*.followOne", t(60)],
     ["memes.texts.*.coolHelp", t(48)], ["memes.texts.*.becMain", t(48)], ["memes.texts.*.becSub", t(48)],
     /* pantallas y mensajes por idioma (etapa 15) */
     ["memes.texts.*.scrSoonLines", list(3, 14)], ["memes.texts.*.scrAuxRows", list(6, 6)], ["memes.texts.*.scrAuxMemes", list(40, 32)], ["memes.texts.*.scrAuxPanic", list(24, 32)],
@@ -1889,7 +1899,7 @@ window.DUCK_REACTOR_PRESETS = {
     ["chat.heat.cooldown", n(0, 600)], ["chat.heat.gap", n(0, 120)], ["chat.heat.phrase", n(1, 15)],
     ["chat.coolant.enabled", { type: "bool" }], ["chat.coolant.amount", n(5, 600)], ["chat.coolant.seconds", n(0, 60)],
     ["chat.coolant.cooldown", n(0, 600)], ["chat.coolant.gap", n(0, 120)], ["chat.coolant.group", n(0, 15)], ["chat.coolant.phrase", n(1, 15)],
-    ["chat.recovery.selfResolve", { type: "bool" }], ["chat.recovery.halfLife", n(10, 1200)], ["chat.auto.enabled", { type: "bool" }], ["chat.auto.calm", n(10, 3600)], ["chat.auto.rise", n(5, 180)], ["chat.recovery.emergency", { type: "bool" }], ["chat.recovery.after", n(5, 600)],
+    ["chat.recovery.selfResolve", { type: "bool" }], ["chat.recovery.halfLife", n(10, 1200)], ["chat.lock.enabled", { type: "bool" }], ["chat.lock.cools", n(1, 50, { int: true })], ["chat.lock.follows", n(0, 50, { int: true })], ["chat.auto.enabled", { type: "bool" }], ["chat.auto.calm", n(10, 3600)], ["chat.auto.rise", n(5, 180)], ["chat.recovery.emergency", { type: "bool" }], ["chat.recovery.after", n(5, 600)],
     ["chat.recovery.rate", n(0.5, 60)], ["chat.recovery.phrase", n(1, 15)],
     ["life.enabled", { type: "bool" }], ["life.preset", en(["sutil", "normal", "cinematico", "custom"])],
     ["life.steam.enabled", { type: "bool" }], ["life.steam.intensity", n(0.2, 1.6)], ["life.steam.strands", n(2, 3, { int: true })],
@@ -3970,14 +3980,15 @@ window.DUCK_REACTOR_PRESETS = {
           return;
         }
         const nm = (d.names && d.names[0]) || T.chatAnon;
-        const tpl = kind === "heat" ? (count > 1 ? T.heatMany : T.heatOne) : (count > 1 ? T.coolMany : T.coolOne);
+        const tpl = kind === "heat" ? (count > 1 ? T.heatMany : T.heatOne) : d.follow && count < 2 && T.followOne ? T.followOne : (count > 1 ? T.coolMany : T.coolOne);
         const i = tpl.indexOf("{name}");
         const l1 = i >= 0 ? (tpl.slice(0, i) + nm).trim() : nm;
         const l2 = (i >= 0 ? tpl.slice(i + 6) : tpl).split("{n}").join(String(count - 1)).trim();
         R.tag.textContent = kind === "heat" ? T.heatTag : T.coolTag;
         fitc(R.name, l1, 790, 66, 24, 0.44);
         fitc(R.rest, l2, 790, 36, 16, 0.44);
-        R.delta.textContent = kind === "heat" && !(d.amount >= 0.5) ? "MAX" : (kind === "heat" ? "+" : "−") + Math.round(d.amount || 0) + " °C";
+        R.delta.textContent = d.lock && kind === "cool" ? d.lock // etapa 22: voto que aún no basta («2/5»)
+          : kind === "heat" && !(d.amount >= 0.5) ? "MAX" : (kind === "heat" ? "+" : "−") + Math.round(d.amount || 0) + " °C";
       },
     };
   }
@@ -4337,6 +4348,11 @@ window.DUCK_REACTOR_PRESETS = {
     const bLbl = E("span", "lbl", null, bl);
     const bTemp = E("span", "stg-temp", "000.0", bl);
     const bUnit = E("span", "stg-unit", null, bl);
+    // etapa 22: contador de «enfriar sale caro» (sólo en CRITICAL con el bloqueo activo)
+    const bLock = E("div", "stg-lock", null, band);
+    const bLock1 = E("span", "stg-lock-a", null, bLock);
+    const bLock2 = E("span", "stg-lock-b", null, bLock);
+    bLock.hidden = true;
     const br = E("div", "stg-band-r lv-text", null, band);
     E("b", "lv-dot", null, br);
     const bLvl = E("span", null, null, br);
@@ -4387,6 +4403,8 @@ window.DUCK_REACTOR_PRESETS = {
       bTemp.textContent = o.st.temp.toFixed(1);
       bUnit.textContent = o.unit;
       bLvl.textContent = o.levelText;
+      bLock.hidden = !o.lockA;
+      if (o.lockA) { bLock1.textContent = o.lockA; bLock2.textContent = o.lockB || ""; }
       root.classList.toggle("is-rec", !!o.rec);
       if (cur && scenes[cur].update) scenes[cur].update(o);
     }
@@ -5088,6 +5106,14 @@ window.DUCK_REACTOR_PRESETS = {
       const rec = sim.recovery ? sim.recovery() : null;
       const T = memeTexts();
       const levelText = rec ? T.recShort || "RECOVERY" : lvText(st.level);
+      // etapa 22: «enfriar sale caro» — contador de votos durante CRITICAL
+      const lk = sim.lockState ? sim.lockState() : null;
+      let lockA = "", lockB = "";
+      if (lk && lk.active) {
+        const fill = (tpl, n, t) => String(tpl || "").split("{n}").join(String(n)).split("{t}").join(String(t));
+        lockA = fill(T.lockCool || "COOLANT {n}/{t}", lk.cool, lk.cools) + (lk.follows > 0 ? " · " + fill(T.lockFollow || "FOLLOWS {n}/{t}", lk.follow, lk.follows) : "");
+        lockB = T.lockPaid || "1 SUB = INSTANT FIX";
+      }
       scene.stage.dataset.level = st.level;
       scene.stage.dataset.recovery = rec ? "1" : "";
       scene.stage.dataset.shown = rec ? rec.target : st.level;
@@ -5105,7 +5131,7 @@ window.DUCK_REACTOR_PRESETS = {
           R.shRecFill.style.width = Math.max(0, Math.min(100, prog * 100)) + "%";
         } else if (st.level === "PANIC") {
           R.shRecA.textContent = T.recActive || "CRITICAL ACTIVE";
-          R.shRecB.textContent = "";
+          R.shRecB.textContent = lockA ? lockA + " · " + lockB : "";
         }
       }
       if (R.incident) paintIncident();
@@ -5133,7 +5159,7 @@ window.DUCK_REACTOR_PRESETS = {
           if (R.shPill.textContent !== levelText) { R.shPill.textContent = levelText; fitPill(R.shPill); }
           drawGraph({ line: R.shLine, area: R.shArea, head: R.shHead, th: R.shTh, range: R.shRange, H: 80, pad: 6 }, hist, st, th);
         }
-        if (R.stg && R.stg.active) R.stg.update({ st, hist, th, rec, levelText: rec && rec.certain ? `${levelText} · ${Math.ceil(rec.eta)} S` : levelText, tempLabel: T.scrTempLabel, unit: cfg.content.core.temp.unit });
+        if (R.stg && R.stg.active) R.stg.update({ st, hist, th, rec, levelText: rec && rec.certain ? `${levelText} · ${Math.ceil(rec.eta)} S` : levelText, lockA, lockB, tempLabel: T.scrTempLabel, unit: cfg.content.core.temp.unit });
         cfg.content.core.readouts.forEach((r, i) => {
           const n = R.readouts[i];
           if (!n) return;
@@ -6311,11 +6337,11 @@ window.DUCK_REACTOR_PRESETS = {
             beats: [], end: Infinity,
             tick(e) {
               if (e >= a.until - 1e-9) { finish(); return; }
-              const key = a.count + "|" + Math.round(a.total) + "|" + C().memes.lang;
+              const key = a.count + "|" + Math.round(a.total) + "|" + C().memes.lang + "|" + (a.lock || "") + (a.follow ? "f" : "");
               if (key !== a.key) {
                 a.key = key;
                 scr().setGag({ target: "stage", scene: "chat", step: 1,
-                  data: { kind, names: a.names.slice(), count: a.count, amount: a.total, rate: C().chat.recovery.rate } });
+                  data: { kind, names: a.names.slice(), count: a.count, amount: a.total, rate: C().chat.recovery.rate, lock: a.lock || null, follow: !!a.follow } });
                 emit();
               }
             },
@@ -6989,7 +7015,9 @@ window.DUCK_REACTOR_PRESETS = {
      * café del suscriptor queda aplazado hasta que el reactor esté seguro.
      * Luces: barrido rojo (calor) o verde (refrigerante).
      */
-    function chatCard(type, name, amount) {
+    function chatCard(type, name, amount, extra) {
+      // etapa 22: extra = { lock: "2/5" (voto que aún no basta), follow: true (viene de un follow) }
+      const lock = extra && extra.lock ? String(extra.lock) : null, follow = !!(extra && extra.follow);
       if (destroyed) return { ok: false, reason: "destruido" };
       const id = type === "heat" ? "chatHeat" : "chatCool";
       const L = getLights && getLights();
@@ -6997,8 +7025,8 @@ window.DUCK_REACTOR_PRESETS = {
       const relaysOn = () => C().life && C().life.enabled && C().life.relays.enabled;
       const sweep = () => { if (!relaysOn() && L && L.flash) L.flash(type === "heat" ? "red" : "green"); };
       const a = active;
-      if (a && a.id === id) {
-        a.names.push(name); a.count++; a.total += amount;
+      if (a && a.id === id && !!a.follow === follow) { // un follow no se agrupa con los !cool (contadores distintos)
+        a.names.push(name); a.count++; a.total += amount; a.lock = lock; a.follow = follow;
         const extra = type === "heat" ? C().chat.heat.phrase : Math.max(1, C().chat.coolant.group);
         a.until = Math.max(a.until, elapsedOf(a) + extra);
         sweep(); tick(); emit();
@@ -7011,7 +7039,7 @@ window.DUCK_REACTOR_PRESETS = {
       }
       holdRescue();
       blocked = null;
-      start(id, "event", { names: [name], count: 1, total: amount });
+      start(id, "event", { names: [name], count: 1, total: amount, lock, follow });
       sweep();
       return { ok: true, grouped: false, count: 1 };
     }
@@ -7608,10 +7636,29 @@ const cue = (n, d) => { const S = window.DR && window.DR.sound; if (S && S.cue) 
     let last = null;
     const emit = () => listeners.forEach((fn) => { try { fn(info()); } catch (e) { console.error("[duck-reactor] stream listener", e); } });
 
-    const TYPES = ["heat", "coolant", "subscriber"];
-    const lastBy = { heat: new Map(), coolant: new Map(), subscriber: new Map() }; // nombre → ms
-    const lastAny = { heat: -Infinity, coolant: -Infinity, subscriber: -Infinity };
+    const TYPES = ["heat", "coolant", "subscriber", "follower"];
+    const lastBy = { heat: new Map(), coolant: new Map(), subscriber: new Map(), follower: new Map() }; // nombre → ms
+    const lastAny = { heat: -Infinity, coolant: -Infinity, subscriber: -Infinity, follower: -Infinity };
     const now = () => performance.now();
+
+    /*
+     * Etapa 22 · «enfriar sale caro» (chat.lock): durante CRITICAL un !cool suelto
+     * no enfría. Cuenta un voto por persona; al llegar a `cools` votos (o a `follows`
+     * follows nuevos) entra de golpe el refrigerante de un rescate. Las subs y los
+     * eventos de pago no pasan por aquí: enfrían de golpe como siempre.
+     * Los contadores se vacían al salir de CRITICAL (o al empezar la recuperación).
+     */
+    const votes = { cool: new Set(), follow: new Set() };
+    function lockOn() {
+      const LK = C().chat.lock, rec = sim.recovery ? sim.recovery() : null;
+      return !!(LK && LK.enabled && C().chat.enabled && sim.state.level === "PANIC" && !rec && !(sim.state.coolLeft > 0.5)); // mientras entra un rescate no se vota
+    }
+    function lockInfo() {
+      const on = lockOn(), LK = C().chat.lock || {};
+      if (!on && (votes.cool.size || votes.follow.size)) { votes.cool.clear(); votes.follow.clear(); }
+      return { active: on, cool: votes.cool.size, cools: LK.cools | 0, follow: votes.follow.size, follows: LK.follows | 0 };
+    }
+    sim.lockState = lockInfo; // las pantallas lo leen para enseñar el contador
 
     function reject(type, reason, source) {
       last = { ok: false, type, reason, source, at: Date.now() };
@@ -7626,14 +7673,16 @@ const cue = (n, d) => { const S = window.DR && window.DR.sound; if (S && S.cue) 
       const source = ev.source || "test";
       if (!TYPES.includes(type)) return reject(type, "tipo de evento desconocido", source);
       const ch = C().chat;
-      if (type === "subscriber") { if (!C().stream.subscriber.enabled) return reject(type, "el evento está desactivado", source); }
+      lockInfo(); // vacía los contadores si ya no estamos en CRITICAL
+      if (type === "follower") { if (!lockOn() || !(C().chat.lock.follows > 0)) return reject(type, "un follow sólo enfría durante CRITICAL", source); }
+      else if (type === "subscriber") { if (!C().stream.subscriber.enabled) return reject(type, "el evento está desactivado", source); }
       else if (!ch.enabled) return reject(type, "«Chat al mando» está desactivado", source);
       else if (!ch[type].enabled) return reject(type, "este evento está desactivado", source);
       const id = ev.id != null && ev.id !== "" ? String(ev.id) : null;
       if (id && seen.includes(id)) return reject(type, "evento repetido (mismo id): ignorado", source);
       const name = cleanName(ev.name);
       // cooldowns (tiempo real). Las suscripciones y los eventos de pago (bits, tips, raids) no tienen.
-      if (type !== "subscriber" && !ev.paid) {
+      if (type !== "subscriber" && type !== "follower" && !ev.paid) {
         const cfg = ch[type], t = now();
         if (t - lastAny[type] < cfg.gap * 1000) return reject(type, L`espera entre eventos: faltan ${((cfg.gap * 1000 - (t - lastAny[type])) / 1000).toFixed(1)} s`, source);
         const key = name || "·anónimo·";
@@ -7644,6 +7693,16 @@ const cue = (n, d) => { const S = window.DR && window.DR.sound; if (S && S.cue) 
         lastAny[type] = t;
       }
       if (id) { seen.push(id); if (seen.length > 200) seen.shift(); }
+      let vote = null;
+      if (!ev.paid && (type === "coolant" || type === "follower") && lockOn()) {
+        const LK = C().chat.lock, box = type === "coolant" ? votes.cool : votes.follow;
+        const need = Math.max(1, type === "coolant" ? LK.cools : LK.follows);
+        const key = (name || "·anónimo·").toLowerCase();
+        if (box.has(key)) return reject(type, L`${name || "anónimo"} ya cuenta para enfriar el núcleo (un voto por persona)`, source);
+        box.add(key);
+        vote = { n: box.size, t: need, follow: type === "follower", done: box.size >= need };
+        if (vote.done) { votes.cool.clear(); votes.follow.clear(); }
+      }
       const before = sim.state.temp;
       let g, fx;
       // primero la presentación (así los cambios de nivel ya encuentran el cartel),
@@ -7652,10 +7711,15 @@ const cue = (n, d) => { const S = window.DR && window.DR.sound; if (S && S.cue) 
         const S = C().stream.subscriber;
         g = gags.rescue(name, S.drop);
         fx = sim.cool(S.drop, S.coolSeconds);
-      } else if (type === "coolant") {
-        const amt = ev.amount > 0 ? +ev.amount : ch.coolant.amount; // etapa 21: cantidad propia (tips, comandos)
-        g = gags.chatCard("coolant", name, amt);
-        fx = sim.cool(amt, ch.coolant.seconds);
+      } else if (vote && !vote.done) {
+        // voto que aún no basta: cartel con el contador, sin enfriar
+        g = gags.chatCard("coolant", name, 0, { lock: vote.n + "/" + vote.t, follow: vote.follow });
+        fx = { instant: true, pending: 0 };
+      } else if (type === "coolant" || type === "follower") {
+        // con el último voto entra el refrigerante de un rescate de una vez
+        const amt = vote ? Math.max(C().stream.subscriber.drop, ch.coolant.amount) : ev.amount > 0 ? +ev.amount : ch.coolant.amount; // etapa 21: cantidad propia (tips, comandos)
+        g = gags.chatCard("coolant", name, amt, vote ? { follow: vote.follow } : null);
+        fx = sim.cool(amt, vote ? C().stream.subscriber.coolSeconds : ch.coolant.seconds);
       } else {
         // lo que de verdad cabe bajo el tope de calor del chat (lo que se ve en el cartel)
         const c = sim.chat, want = ev.amount > 0 ? +ev.amount : ch.heat.amount; // etapa 21: cantidad propia (bits, raids, comandos)
@@ -7663,10 +7727,11 @@ const cue = (n, d) => { const S = window.DR && window.DR.sound; if (S && S.cue) 
         g = gags.chatCard("heat", name, eff);
         fx = sim.heat(eff, ch.heat.ramp);
       }
-      if (type === "coolant") cue("coolant", { grouped: g.grouped });
+      if (vote && !vote.done) cue("button");
+      else if (type === "coolant" || type === "follower") cue("coolant", { grouped: g.grouped });
       else if (type === "subscriber") cue("subscribe", { grouped: g.grouped });
       last = { ok: true, type, name: name || null, source, grouped: g.grouped, count: g.count, before, after: sim.state.temp,
-        instant: fx.instant, pending: fx.pending, at: Date.now() };
+        instant: fx.instant, pending: fx.pending, vote, at: Date.now() };
       emit();
       return last;
     }
@@ -8425,7 +8490,10 @@ const cue = (n, d) => { const S = window.DR && window.DR.sound; if (S && S.cue) 
     const now = () => (ctx ? ctx.currentTime : 0);
     const enabled = () => !!(C() && C().enabled);
     const soundOn = (id) => { const s = C().sounds[id]; return !!(s && s.on); };
-    const visible = () => !document.hidden;
+    // En OBS (y en el widget de StreamElements) la página puede declararse «oculta» aunque la fuente
+    // se esté emitiendo: ahí no se silencia por visibilidad (opción ignoreHidden o window.obsstudio).
+    const ignoreHidden = () => !!((window.DUCK_REACTOR_OPTIONS || {}).ignoreHidden || window.obsstudio);
+    const visible = () => ignoreHidden() || !document.hidden;
     const running = () => !!sim.running;
     const emit = () => listeners.forEach((fn) => { try { fn(info()); } catch (e) { console.error("[duck-reactor] audio listener", e); } });
 
@@ -8682,7 +8750,7 @@ const cue = (n, d) => { const S = window.DR && window.DR.sound; if (S && S.cue) 
 
     /* Página oculta (OBS sin mostrar la fuente, otra pestaña): se suspende y no se acumula nada. */
     function onVis() {
-      if (!ctx) return;
+      if (!ctx || ignoreHidden()) return;
       if (document.hidden) { stopAll(0); try { ctx.suspend(); } catch (e) { /* nada */ } } // corte seco: al volver no queda ningún resto
       else {
         quietUntil = performance.now() + 600;

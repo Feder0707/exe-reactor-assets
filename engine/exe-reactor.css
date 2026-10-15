@@ -1,4 +1,4 @@
-/* EXE REACTOR engine styles v1.0.0 · form&soul.exe · VT323 font: SIL Open Font License */
+/* EXE REACTOR engine styles v1.1.0 · form&soul.exe · VT323 font: SIL Open Font License */
 /* Duck Reactor — estilos de la escena (lo que forma parte del widget). */
 
 .dr-viewport {
@@ -508,6 +508,11 @@
   color: rgb(var(--lv));
   text-shadow: 0 0 calc(2px * var(--glow)) rgba(var(--lv), 0.9), 0 0 calc(9px * var(--glow)) rgba(var(--lv), 0.45);
 }
+/* etapa 22: contador «enfriar sale caro», centrado en la franja */
+.stg-lock { flex: 1; min-width: 0; display: grid; justify-items: center; gap: 1px; padding: 0 14px; line-height: 1; text-align: center; white-space: nowrap; }
+.stg-lock[hidden] { display: none; }
+.stg-lock-a { font-size: 24px; letter-spacing: 0.08em; color: rgb(var(--ok)); text-shadow: 0 0 calc(2px * var(--glow)) rgba(var(--ok), 0.9), 0 0 calc(8px * var(--glow)) rgba(var(--ok), 0.5); }
+.stg-lock-b { font-size: 17px; letter-spacing: 0.1em; color: rgba(var(--phos), 0.85); }
 .stg-band-r b { width: 12px; height: 12px; border-radius: 50%; background: rgb(var(--lv)); box-shadow: 0 0 6px rgba(var(--lv), 0.9); }
 .stg-host { position: absolute; inset: 0; transform-origin: 50% 190px; }
 .stg-scene { position: absolute; inset: 0; }
